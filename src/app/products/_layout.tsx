@@ -9,7 +9,7 @@ export default function ProductLayout() {
     <Stack>
       <Stack.Screen
         name="[slug]"
-        options={{
+        options={({ navigation }) => ({
           headerShown: true,
           headerLeft: () => {
             return (
@@ -27,7 +27,7 @@ export default function ProductLayout() {
               </TouchableOpacity>
             );
           },
-        }}
+        })}
       />
     </Stack>
   );

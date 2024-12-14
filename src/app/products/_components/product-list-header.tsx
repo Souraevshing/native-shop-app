@@ -1,5 +1,6 @@
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import { useCallback } from "react";
 import {
   FlatList,
   GestureResponderEvent,
@@ -11,9 +12,8 @@ import {
   View,
 } from "react-native";
 
-import { useCallback } from "react";
-import { heroImage } from "../../../../assets";
 import { Category } from "../../../../types/global";
+import { CATEGORIES } from "../../../utils/categories";
 
 export default function ProductHeader() {
   let categories;
@@ -53,7 +53,7 @@ export default function ProductHeader() {
 
         <View style={styles.headerRight}>
           <Link style={styles.cartContainer} href="/cart" asChild>
-            <Pressable>
+            <Pressable delayHoverIn={50} delayHoverOut={50}>
               {({ pressed }) => (
                 <View>
                   <MaterialCommunityIcons
@@ -73,18 +73,23 @@ export default function ProductHeader() {
           <TouchableOpacity
             onPress={handleSignOut}
             style={styles.signOutButton}
+            delayPressIn={50}
+            delayPressOut={50}
           >
-            <MaterialIcons name="logout" size={30} color="red" />
+            <MaterialCommunityIcons name="logout" size={30} color="#FB5607" />
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.heroContainer}>
-        <Image source={heroImage} style={styles.heroImage} />
+        <Image
+          source={require("../../../../assets/images/hero.png")}
+          style={styles.heroImage}
+        />
       </View>
       <View style={styles.categoriesContainer}>
         <Text style={styles.sectionTitle}>Categories</Text>
         <FlatList
-          data={categories}
+          data={CATEGORIES}
           renderItem={renderCategoryItem}
           initialNumToRender={5}
           windowSize={3}

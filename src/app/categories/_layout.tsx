@@ -9,7 +9,7 @@ export default function CategoriesLayout() {
     <Stack>
       <Stack.Screen
         name="[slug]"
-        options={{
+        options={({ navigation }) => ({
           headerShown: true,
           headerLeft: () => {
             return (
@@ -27,7 +27,7 @@ export default function CategoriesLayout() {
               </TouchableOpacity>
             );
           },
-        }}
+        })}
       />
     </Stack>
   );
