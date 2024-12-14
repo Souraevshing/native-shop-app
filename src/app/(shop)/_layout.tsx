@@ -1,4 +1,4 @@
-import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,10 +10,10 @@ const TabIcon = (props: {
   name: React.ComponentProps<typeof FontAwesome6>["name"];
 }) => {
   return (
-    <FontAwesome6
+    <MaterialCommunityIcons
       {...props}
       size={24}
-      style={{ color: props.focused ? "#66FF00" : "#BEBFC5" }}
+      style={{ color: props.focused ? "#66FF00" : "#BBEB5" }}
     />
   );
 };
@@ -42,7 +42,7 @@ export default function ShopLayout() {
           options={{
             title: "Shop",
             tabBarIcon(props) {
-              return <TabIcon name="shop" {...props} />;
+              return <TabIcon name="shopping" {...props} color="black" />;
             },
           }}
         />

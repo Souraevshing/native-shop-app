@@ -1,3 +1,4 @@
+import { headSetImage1, iPhoneImage1 } from "../../assets";
 import { Order } from "../../types/global";
 
 export const ORDERS: Order[] = [
@@ -15,7 +16,7 @@ export const ORDERS: Order[] = [
         slug: "product-1",
         image: ["url1"],
         price: 10.0,
-        heroImage: require("../assets/images/i-phone-1.jpg"),
+        heroImage: iPhoneImage1,
       },
       {
         id: 2,
@@ -23,7 +24,7 @@ export const ORDERS: Order[] = [
         slug: "product-2",
         image: ["url2"],
         price: 20.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
     ],
   },
@@ -41,7 +42,7 @@ export const ORDERS: Order[] = [
         slug: "product-3",
         image: ["url3"],
         price: 30.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
       {
         id: 4,
@@ -49,7 +50,7 @@ export const ORDERS: Order[] = [
         slug: "product-4",
         image: ["url4"],
         price: 40.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
     ],
   },
@@ -67,7 +68,7 @@ export const ORDERS: Order[] = [
         slug: "product-5",
         image: ["url5"],
         price: 50.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
       {
         id: 6,
@@ -75,7 +76,7 @@ export const ORDERS: Order[] = [
         slug: "product-6",
         image: ["url6"],
         price: 60.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
     ],
   },
@@ -93,7 +94,7 @@ export const ORDERS: Order[] = [
         slug: "product-7",
         image: ["url7"],
         price: 70.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
       {
         id: 8,
@@ -101,7 +102,7 @@ export const ORDERS: Order[] = [
         slug: "product-8",
         image: ["url8"],
         price: 80.0,
-        heroImage: require("../assets/images/head-set-1.jpg"),
+        heroImage: headSetImage1,
       },
     ],
   },
