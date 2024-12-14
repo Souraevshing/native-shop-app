@@ -7,6 +7,7 @@ import ProductHeader from "../products/_components/product-list-header";
 import ProductListItem from "../products/_components/product-list-item";
 
 const Shop = () => {
+  // render individual items
   const renderItem = useCallback(({ item }: { item: Product }) => {
     return <ProductListItem products={item} />;
   }, []);
