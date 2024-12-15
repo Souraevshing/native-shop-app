@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { CartItem, CartState } from "../../../types/store";
+import { CartItem, CartState } from "../types/store";
 
 const useCartStore = create<CartState>((set, get) => ({
-  items: [],
+  items: [] as CartItem[],
 
   // Add a product to the cart
   addProducts: (product: CartItem) => {
@@ -12,14 +12,20 @@ const useCartStore = create<CartState>((set, get) => ({
       set((state) => ({
         items: state.items.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? {
+                ...item,
+                quantity: Math.min(
+                  item.quantity + product.quantity,
+                  item.maxQuantity
+                ),
+              }
             : item
         ),
       }));
     } else {
       // Otherwise, add the product to the cart
       set((state) => ({
-        items: [...state.items, { ...product, quantity: 1 }],
+        items: [...state.items, product],
       }));
     }
   },
@@ -64,6 +70,10 @@ const useCartStore = create<CartState>((set, get) => ({
   // Get the total number of items in the cart
   getTotalItemsCount: () => {
     return get().items.reduce((count, item) => count + item.quantity, 0);
+  },
+
+  resetCart() {
+    set({ items: [] });
   },
 }));
 

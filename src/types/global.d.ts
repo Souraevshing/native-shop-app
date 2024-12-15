@@ -21,9 +21,9 @@ export type Product = {
   id: number;
   title: string;
   slug: string;
-  image: (ImageSourcePropType | string)[];
+  imageUrl: ImageSourcePropType[];
   price: number;
   heroImage: ImageSourcePropType;
   category?: Omit<Category, "products">;
-  quantity?: number;
+  maxQuantity?: number;
 };

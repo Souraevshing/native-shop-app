@@ -1,9 +1,12 @@
+import { ImageSourcePropType } from "react-native";
+
 export type CartItem = {
   id: number;
   title: string;
-  image: string;
+  heroImage: ImageSourcePropType;
   price: number;
   quantity: number;
+  maxQuantity: number;
 };
 
 export type CartState = {
@@ -14,4 +17,5 @@ export type CartState = {
   removeItems: (id: number) => void;
   getTotalPrice: () => number;
   getTotalItemsCount: () => number;
+  resetCart: () => void;
 };

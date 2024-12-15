@@ -12,22 +12,23 @@ import {
   View,
 } from "react-native";
 
-import { Category } from "../../../../types/global";
+import { useToast } from "react-native-toast-notifications";
+import { Category } from "../../../types/global";
 import { CATEGORIES } from "../../../utils/categories";
 
 export default function ProductHeader() {
-  let categories;
+  const toast = useToast();
 
   const getItemCount = useCallback((): number => {
     return 1;
   }, []);
 
   const handleSignOut = (event: GestureResponderEvent) => {
-    console.log(event);
+    toast.show("Logging out ", { type: "danger" });
   };
 
   // render category as memoized fn to optimize performance
-  const renderCategoryItem = useCallback(({ item }: { item: Category }) => {
+  const renderItem = useCallback(({ item }: { item: Category }) => {
     return (
       <Link asChild href={`/categories/${item.slug}`}>
         <Pressable style={styles.category}>
@@ -90,7 +91,7 @@ export default function ProductHeader() {
         <Text style={styles.sectionTitle}>Categories</Text>
         <FlatList
           data={CATEGORIES}
-          renderItem={renderCategoryItem}
+          renderItem={renderItem}
           initialNumToRender={5}
           windowSize={3}
           removeClippedSubviews={true}

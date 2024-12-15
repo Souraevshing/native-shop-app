@@ -1,10 +1,11 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { Product } from "../../../../types/global";
+
+import { Product } from "../../../types/global";
 
 export default function ProductListItem({
-  products: { id, title, heroImage, image, category, price, slug, quantity },
+  products: { title, heroImage, price, slug },
 }: {
   products: Product;
 }) {

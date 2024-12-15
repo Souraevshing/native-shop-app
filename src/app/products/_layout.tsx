@@ -1,10 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useNavigation } from "expo-router";
+import { Stack } from "expo-router";
 import { TouchableOpacity } from "react-native";
 
 export default function ProductLayout() {
-  const navigation = useNavigation();
-
   return (
     <Stack>
       <Stack.Screen
@@ -19,7 +17,7 @@ export default function ProductLayout() {
                 }}
               >
                 <Ionicons
-                  name="arrow-back-circle-sharp"
+                  name="chevron-back"
                   size={24}
                   color={"black"}
                   selectionColor={"gray"}

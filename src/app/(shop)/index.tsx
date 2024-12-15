@@ -1,7 +1,7 @@
 import { memo, useCallback } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 
-import { Product } from "../../../types/global";
+import { Product } from "../../types/global";
 import { PRODUCTS } from "../../utils/products";
 import ProductHeader from "../products/_components/product-list-header";
 import ProductListItem from "../products/_components/product-list-item";
