@@ -1,4 +1,6 @@
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   FlatList,
@@ -10,8 +12,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Button } from "react-native-paper";
 
 import useCartStore from "../store/cart";
+import { RootStackParamList } from "../types/navigation";
 
 const CartItemComponent = ({
   item,
@@ -78,6 +82,32 @@ export default function Cart() {
     removeProducts,
   } = useCartStore();
 
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  if (getTotalItemsCount() === 0) {
+    return (
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={styles.totalText}>Your cart is empty!</Text>
+        <Button
+          mode="contained-tonal"
+          textColor="white"
+          rippleColor={"gray"}
+          buttonColor="black"
+          onPress={() => navigation.navigate("(shop)")}
+        >
+          Shop Now
+        </Button>
+      </View>
+    );
+  }
+
   const handleCheckout = () => {};
 
   return (
@@ -87,17 +117,20 @@ export default function Cart() {
         hideTransitionAnimation="slide"
         animated
       />
+
       <FlatList
         data={items}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <CartItemComponent
-            item={item}
-            onRemove={removeProducts}
-            onIncrement={addItems}
-            onDecrement={removeItems}
-          />
-        )}
+        renderItem={({ item }) => {
+          return (
+            <CartItemComponent
+              item={item}
+              onRemove={removeProducts}
+              onIncrement={addItems}
+              onDecrement={removeItems}
+            />
+          );
+        }}
         contentContainerStyle={styles.cartList}
       />
       <View style={styles.footer}>

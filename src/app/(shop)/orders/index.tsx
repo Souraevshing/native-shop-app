@@ -1,3 +1,5 @@
+import { Link, Stack } from "expo-router";
+import moment from "moment";
 import {
   FlatList,
   ListRenderItem,
@@ -7,9 +9,15 @@ import {
   View,
 } from "react-native";
 
-import { Link } from "expo-router";
 import { Order } from "../../../types/global";
 import { ORDERS } from "../../../utils/orders";
+
+const showOrderStatus: Record<string, string> = {
+  Pending: "Pending",
+  Shipped: "Shipped",
+  Completed: "Completed",
+  InTransit: "In Transit",
+};
 
 const renderItem: ListRenderItem<Order> = ({ item }) => {
   return (
@@ -17,9 +25,19 @@ const renderItem: ListRenderItem<Order> = ({ item }) => {
       <Pressable style={styles.orderContainer}>
         <View style={styles.orderContent}>
           <View style={styles.orderDetailsContainer}>
-            <Text style={styles.orderItem}>{item.item}</Text>
+            <Text style={styles.orderItem}>{item.slug}</Text>
             <Text style={styles.orderDetails}>{item.details}</Text>
-            <Text style={styles.orderDate}>{item.createdAt}</Text>
+            <Text style={styles.orderDate}>
+              {" "}
+              {moment(item.createdAt).format("ddd, DD MMMM yyyy")}
+            </Text>
+          </View>
+          <View
+            style={[styles.statusBadge, styles[`statusBadge${item.status}`]]}
+          >
+            <Text style={styles.statusText}>
+              {showOrderStatus[item.status]}
+            </Text>
           </View>
         </View>
       </Pressable>
@@ -30,6 +48,7 @@ const renderItem: ListRenderItem<Order> = ({ item }) => {
 export default function Orders() {
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ title: "Orders" }} />
       <FlatList
         data={ORDERS}
         keyExtractor={(item) => item.id.toString()}
@@ -72,26 +91,29 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statusBadge: {
+    width: 100,
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 4,
-    alignSelf: "flex-start",
+    borderRadius: 9999,
+    alignItems: "center",
+    justifyContent: "center",
   },
   statusText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#fff",
+    textAlign: "center",
   },
-  statusBadge_Pending: {
+  statusBadgePending: {
     backgroundColor: "#ffcc00",
   },
-  statusBadge_Completed: {
+  statusBadgeCompleted: {
     backgroundColor: "#4caf50",
   },
-  statusBadge_Shipped: {
+  statusBadgeShipped: {
     backgroundColor: "#2196f3",
   },
-  statusBadge_InTransit: {
+  statusBadgeInTransit: {
     backgroundColor: "#ff9800",
   },
 });

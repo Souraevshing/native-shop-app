@@ -5,7 +5,7 @@ export const ORDERS: Order[] = [
     id: 1,
     item: "Order 1",
     details: "Details about order 1",
-    status: "pending",
+    status: "Pending",
     slug: "order-1",
     createdAt: "2024-07-01",
     items: [
@@ -31,7 +31,7 @@ export const ORDERS: Order[] = [
     id: 2,
     item: "Order 2",
     details: "Details about order 2",
-    status: "completed",
+    status: "Completed",
     slug: "order-2",
     createdAt: "2024-07-02",
     items: [
@@ -57,7 +57,7 @@ export const ORDERS: Order[] = [
     id: 3,
     item: "Order 3",
     details: "Details about order 3",
-    status: "shipped",
+    status: "Shipped",
     slug: "order-3",
     createdAt: "2024-07-03",
     items: [
@@ -83,7 +83,7 @@ export const ORDERS: Order[] = [
     id: 4,
     item: "Order 4",
     details: "Details about order 4",
-    status: "in-transit",
+    status: "InTransit",
     slug: "order-4",
     createdAt: "2024-07-04",
     items: [

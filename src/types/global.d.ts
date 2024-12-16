@@ -12,7 +12,7 @@ export type Order = {
   slug: string;
   item: string;
   details: string;
-  status: "pending" | "completed" | "shipped" | "in-transit";
+  status: "Pending" | "Completed" | "Shipped" | "InTransit";
   createdAt: string;
   items: Product[];
 };

@@ -11,7 +11,7 @@ export default function RootLayout() {
     <ToastProvider
       swipeEnabled={true}
       placement="top"
-      duration={3000}
+      duration={1000}
       animationType="slide-in"
       animationDuration={300}
       successColor="green"
@@ -72,7 +72,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="cart"
           options={{
-            headerShown: true,
+            headerShown: false,
             title: "Cart",
             headerTitleAlign: "center",
             sheetElevation: 10,

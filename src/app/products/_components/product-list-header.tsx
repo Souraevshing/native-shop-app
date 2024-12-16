@@ -12,20 +12,15 @@ import {
   View,
 } from "react-native";
 
-import { useToast } from "react-native-toast-notifications";
+import { useCustomToast } from "../../../hooks/use-toast";
+import useCartStore from "../../../store/cart";
 import { Category } from "../../../types/global";
 import { CATEGORIES } from "../../../utils/categories";
 
 export default function ProductHeader() {
-  const toast = useToast();
+  const { getTotalItemsCount } = useCartStore();
 
-  const getItemCount = useCallback((): number => {
-    return 1;
-  }, []);
-
-  const handleSignOut = (event: GestureResponderEvent) => {
-    toast.show("Logging out ", { type: "danger" });
-  };
+  const { showError } = useCustomToast();
 
   // render category as memoized fn to optimize performance
   const renderItem = useCallback(({ item }: { item: Category }) => {
@@ -38,6 +33,10 @@ export default function ProductHeader() {
       </Link>
     );
   }, []);
+
+  const handleSignOut = (_event: GestureResponderEvent) => {
+    showError("Sign out successfully", { type: "success" });
+  };
 
   return (
     <View style={styles.headerContainer}>
@@ -65,7 +64,7 @@ export default function ProductHeader() {
                   />
 
                   <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>{getItemCount()}</Text>
+                    <Text style={styles.badgeText}>{getTotalItemsCount()}</Text>
                   </View>
                 </View>
               )}

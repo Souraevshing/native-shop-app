@@ -1,17 +1,17 @@
-import { Stack, useRouter } from "expo-router";
-import React, { useState } from "react";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Stack, useNavigation } from "expo-router";
+import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { Button, Divider } from "react-native-paper";
 
+import { RootStackParamList } from "../types/navigation";
+
 export default function NotFoundScreen() {
-  const router = useRouter();
-  const [isPressed, setIsPressed] = useState(false);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleButtonPress = () => {
-    setIsPressed(true); // Update button state
-    setTimeout(() => {
-      router.back(); // Navigate back after a small delay for effect
-    }, 200);
+    navigation.navigate("(shop)");
   };
 
   return (
@@ -38,12 +38,10 @@ export default function NotFoundScreen() {
           <View style={styles.buttonContainer}>
             <Button
               mode="contained-tonal"
-              onPress={handleButtonPress}
-              style={[styles.button, isPressed && styles.buttonPressed]}
-              labelStyle={[
-                styles.buttonLabel,
-                isPressed && styles.buttonLabelPressed,
-              ]}
+              textColor="white"
+              rippleColor={"gray"}
+              buttonColor="black"
+              onPressIn={handleButtonPress}
             >
               Back to home
             </Button>
@@ -74,7 +72,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     width: "30%",
-    height: 5,
+    height: 3,
     marginVertical: 10,
     backgroundColor: "#FFF",
     borderRadius: 50,
