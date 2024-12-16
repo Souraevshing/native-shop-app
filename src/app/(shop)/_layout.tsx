@@ -1,7 +1,10 @@
 import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useAuth } from "../../providers/auth-provider";
 
 const TabIcon = (props: {
   focused: boolean;
@@ -17,7 +20,26 @@ const TabIcon = (props: {
     />
   );
 };
-export default function ShopLayout() {
+
+export default function TabsLayout() {
+  const { mount, session } = useAuth();
+
+  if (mount) {
+    return (
+      <ActivityIndicator
+        animating
+        size={"small"}
+        style={{
+          flex: 1,
+        }}
+      />
+    );
+  }
+
+  if (!session) {
+    return <Redirect href="/auth" />;
+  }
+
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
       <Tabs

@@ -1,8 +1,9 @@
-import React, { useCallback } from "react";
-import { StyleSheet } from "react-native";
+import React, { memo, useCallback } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
 import { Product } from "../../types/global";
-import Auth from "../auth";
+import { PRODUCTS } from "../../utils/products";
+import ProductHeader from "../products/_components/product-list-header";
 import ProductListItem from "../products/_components/product-list-item";
 
 const Shop = () => {
@@ -13,8 +14,7 @@ const Shop = () => {
 
   return (
     <>
-      <Auth />
-      {/* <View>
+      <View>
         <FlatList
           data={PRODUCTS}
           renderItem={renderItem}
@@ -30,7 +30,7 @@ const Shop = () => {
             paddingVertical: 5,
           }}
         />
-      </View> */}
+      </View>
     </>
   );
 };

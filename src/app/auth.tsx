@@ -1,3 +1,4 @@
+import { Redirect } from "expo-router";
 import React from "react";
 import { Controller } from "react-hook-form";
 import {
@@ -9,17 +10,47 @@ import {
   View,
 } from "react-native";
 
+import { useCustomToast } from "../hooks/use-toast";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../providers/auth-provider";
 import { AuthForm, useAuthForm } from "../schema/auth.schema";
 
 export default function Auth() {
+  const { showSuccess, showError } = useCustomToast();
+
   const { control, formState, handleSubmit, reset } = useAuthForm();
 
+  const { session } = useAuth();
+
+  if (session) {
+    return <Redirect href="(shop)" />;
+  }
+
   const handleLogIn = async ({ email, password }: AuthForm) => {
-    console.log(email, password);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      showError(`${error.message}`);
+    } else {
+      showSuccess(`Logged in successfully `);
+    }
+
+    reset();
   };
 
   const handleSignUp = async ({ email, password }: AuthForm) => {
-    console.log(email, password);
+    const { error } = await supabase.auth.signUp({ email, password });
+
+    showSuccess(`Account created successfully`);
+
+    if (error) {
+      showError(`${error.message}`);
+    }
+
+    reset();
   };
 
   return (
@@ -40,7 +71,7 @@ export default function Auth() {
           name="email"
           render={({
             field: { onChange, onBlur, value },
-            fieldState: { invalid, error, isTouched },
+            fieldState: { error },
           }) => (
             <>
               <TextInput

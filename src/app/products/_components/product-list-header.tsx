@@ -3,7 +3,6 @@ import { Link } from "expo-router";
 import { useCallback } from "react";
 import {
   FlatList,
-  GestureResponderEvent,
   Image,
   Pressable,
   StyleSheet,
@@ -13,6 +12,7 @@ import {
 } from "react-native";
 
 import { useCustomToast } from "../../../hooks/use-toast";
+import { supabase } from "../../../lib/supabase";
 import useCartStore from "../../../store/cart";
 import { Category } from "../../../types/global";
 import { CATEGORIES } from "../../../utils/categories";
@@ -20,7 +20,7 @@ import { CATEGORIES } from "../../../utils/categories";
 export default function ProductHeader() {
   const { getTotalItemsCount } = useCartStore();
 
-  const { showError } = useCustomToast();
+  const { showError, showSuccess } = useCustomToast();
 
   // render category as memoized fn to optimize performance
   const renderItem = useCallback(({ item }: { item: Category }) => {
@@ -34,8 +34,9 @@ export default function ProductHeader() {
     );
   }, []);
 
-  const handleSignOut = (_event: GestureResponderEvent) => {
-    showError("Sign out successfully", { type: "success" });
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    showSuccess("Logged out successfully");
   };
 
   return (

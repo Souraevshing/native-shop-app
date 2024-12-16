@@ -5,6 +5,7 @@ import {
 } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { ToastProvider } from "react-native-toast-notifications";
+import AuthProvider from "../providers/auth-provider";
 
 export default function RootLayout() {
   return (
@@ -26,77 +27,79 @@ export default function RootLayout() {
       warningIcon={<MaterialIcons name="warning" size={24} color="#FFDB58" />}
       icon={<Fontisto name="shopping-store" size={14} color="#F8F4FF" />}
     >
-      <Stack>
-        <Stack.Screen
-          name="(shop)"
-          options={{
-            headerShown: false,
-            title: "Shop",
-            headerTitleAlign: "center",
-            sheetElevation: 10,
-            animation: "fade",
-            statusBarTranslucent: false,
-            statusBarStyle: "dark",
-            statusBarAnimation: "fade",
-          }}
-        />
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen
+            name="(shop)"
+            options={{
+              headerShown: false,
+              title: "Shop",
+              headerTitleAlign: "center",
+              sheetElevation: 10,
+              animation: "fade",
+              statusBarTranslucent: false,
+              statusBarStyle: "dark",
+              statusBarAnimation: "fade",
+            }}
+          />
 
-        <Stack.Screen
-          name="categories"
-          options={{
-            headerShown: false,
-            title: "Categories",
-            headerTitleAlign: "center",
-            sheetElevation: 10,
-            animation: "fade",
-            statusBarTranslucent: false,
-            statusBarStyle: "dark",
-            statusBarAnimation: "fade",
-          }}
-        />
+          <Stack.Screen
+            name="categories"
+            options={{
+              headerShown: false,
+              title: "Categories",
+              headerTitleAlign: "center",
+              sheetElevation: 10,
+              animation: "fade",
+              statusBarTranslucent: false,
+              statusBarStyle: "dark",
+              statusBarAnimation: "fade",
+            }}
+          />
 
-        <Stack.Screen
-          name="products"
-          options={{
-            headerShown: false,
-            title: "Product",
-            headerTitleAlign: "center",
-            sheetElevation: 10,
-            animation: "fade",
-            statusBarTranslucent: false,
-            statusBarStyle: "dark",
-            statusBarAnimation: "fade",
-          }}
-        />
+          <Stack.Screen
+            name="products"
+            options={{
+              headerShown: false,
+              title: "Product",
+              headerTitleAlign: "center",
+              sheetElevation: 10,
+              animation: "fade",
+              statusBarTranslucent: false,
+              statusBarStyle: "dark",
+              statusBarAnimation: "fade",
+            }}
+          />
 
-        <Stack.Screen
-          name="cart"
-          options={{
-            headerShown: false,
-            title: "Cart",
-            headerTitleAlign: "center",
-            sheetElevation: 10,
-            animation: "fade",
-            statusBarTranslucent: false,
-            statusBarStyle: "dark",
-            statusBarAnimation: "fade",
-          }}
-        />
+          <Stack.Screen
+            name="cart"
+            options={{
+              headerShown: false,
+              title: "Cart",
+              headerTitleAlign: "center",
+              sheetElevation: 10,
+              animation: "fade",
+              statusBarTranslucent: false,
+              statusBarStyle: "dark",
+              statusBarAnimation: "fade",
+            }}
+          />
 
-        <Stack.Screen
-          name="auth"
-          options={{
-            presentation: "modal",
-            headerShown: true,
-            headerTitleAlign: "center",
-            sheetElevation: 10,
-            animation: "fade",
-            statusBarTranslucent: false,
-            statusBarStyle: "dark",
-            statusBarAnimation: "fade",
-          }}
-        />
-      </Stack>
+          <Stack.Screen
+            name="auth"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+              headerTitleAlign: "center",
+              sheetElevation: 10,
+              animation: "fade",
+              statusBarTranslucent: false,
+              statusBarStyle: "dark",
+              statusBarAnimation: "fade",
+            }}
+          />
+        </Stack>
+      </AuthProvider>
     </ToastProvider>
   );
 }
