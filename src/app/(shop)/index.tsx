@@ -1,9 +1,8 @@
-import { memo, useCallback } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import React, { useCallback } from "react";
+import { StyleSheet } from "react-native";
 
 import { Product } from "../../types/global";
-import { PRODUCTS } from "../../utils/products";
-import ProductHeader from "../products/_components/product-list-header";
+import Auth from "../auth";
 import ProductListItem from "../products/_components/product-list-item";
 
 const Shop = () => {
@@ -13,23 +12,26 @@ const Shop = () => {
   }, []);
 
   return (
-    <View>
-      <FlatList
-        data={PRODUCTS}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        initialNumToRender={5}
-        windowSize={3}
-        removeClippedSubviews={true}
-        numColumns={1}
-        ListHeaderComponent={memo(ProductHeader)}
-        contentContainerStyle={styles.flatListContent}
-        style={{
-          paddingHorizontal: 10,
-          paddingVertical: 5,
-        }}
-      />
-    </View>
+    <>
+      <Auth />
+      {/* <View>
+        <FlatList
+          data={PRODUCTS}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          initialNumToRender={5}
+          windowSize={3}
+          removeClippedSubviews={true}
+          numColumns={1}
+          ListHeaderComponent={memo(ProductHeader)}
+          contentContainerStyle={styles.flatListContent}
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+          }}
+        />
+      </View> */}
+    </>
   );
 };
 
