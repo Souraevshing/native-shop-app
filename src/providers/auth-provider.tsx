@@ -41,19 +41,19 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         setSession(session);
 
         // Fetch user details if session exists
-        // if (session) {
-        //   const { data: user, error: userError } = await supabase
-        //     .from("users")
-        //     .select("*")
-        //     .eq("id", session.user.id)
-        //     .single();
+        if (session) {
+          const { data: user, error: userError } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
 
-        //   if (userError) {
-        //     console.error("Error fetching user data:", userError);
-        //   } else {
-        //     setUser(user);
-        //   }
-        // }
+          if (userError) {
+            console.error("Error fetching user data:", userError);
+          } else {
+            setUser(user);
+          }
+        }
       } catch (error) {
         console.error("Unexpected error:", error);
       } finally {
