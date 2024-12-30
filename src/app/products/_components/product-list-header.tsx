@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useCallback } from "react";
 import {
@@ -13,13 +13,14 @@ import {
 
 import { useCustomToast } from "../../../hooks/use-toast";
 import { supabase } from "../../../lib/supabase";
+import { useAuth } from "../../../providers/auth-provider";
 import useCartStore from "../../../store/cart";
 import { Category } from "../../../types/global";
 import { CATEGORIES } from "../../../utils/categories";
 
 export default function ProductHeader() {
   const { getTotalItemsCount } = useCartStore();
-
+  const { user } = useAuth();
   const { showError, showSuccess } = useCustomToast();
 
   // render category as memoized fn to optimize performance
@@ -44,11 +45,15 @@ export default function ProductHeader() {
       <View style={styles.headerTop}>
         <View style={styles.headerLeft}>
           <View style={styles.avatarContainer}>
-            <Image
-              source={{ uri: "https://via.placeholder.com/40" }}
+            <FontAwesome6
+              name="user-circle"
+              size={24}
+              color="black"
               style={styles.avatarImage}
             />
-            <Text style={styles.avatarText}>Hello </Text>
+            <Text style={styles.avatarText}>
+              Hello {user?.email.split("@")[0]}
+            </Text>
           </View>
         </View>
 
@@ -122,8 +127,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   avatarContainer: {
+    display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginBottom: 10,
   },
   avatarImage: {

@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import {
   ImageBackground,
@@ -16,6 +16,9 @@ import { useAuth } from "../providers/auth-provider";
 import { AuthForm, useAuthForm } from "../schema/auth.schema";
 
 export default function Auth() {
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const { showSuccess, showError } = useCustomToast();
 
   const { control, formState, handleSubmit, reset } = useAuthForm();
@@ -26,10 +29,16 @@ export default function Auth() {
     return <Redirect href="(shop)" />;
   }
 
-  const handleLogIn = async ({ email, password }: AuthForm) => {
+  const handleLogIn = async (data: AuthForm) => {
+    if (!data.email || !data.password) {
+      setModalMessage("All fields are required!");
+      setShowModal(true);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
     });
 
     if (error) {
@@ -71,11 +80,10 @@ export default function Auth() {
           name="email"
           render={({
             field: { onChange, onBlur, value },
-            fieldState: { error },
+            fieldState: { error, isTouched },
           }) => (
             <>
               <TextInput
-                autoFocus
                 placeholderTextColor={"#b5c6e0"}
                 placeholder="Enter email address"
                 value={value}
@@ -85,7 +93,9 @@ export default function Auth() {
                 editable={!formState.isSubmitting}
                 style={styles.input}
               />
-              {error && <Text style={styles.error}>{error.message}</Text>}
+              {error && isTouched && (
+                <Text style={styles.error}>{error.message}</Text>
+              )}
             </>
           )}
         />
@@ -99,7 +109,7 @@ export default function Auth() {
           name="password"
           render={({
             field: { onChange, onBlur, value },
-            fieldState: { invalid, error, isTouched },
+            fieldState: { error, isTouched },
           }) => (
             <>
               <TextInput
@@ -111,10 +121,12 @@ export default function Auth() {
                 onBlur={onBlur}
                 autoCapitalize="none"
                 editable={!formState.isSubmitting}
-                style={styles.input}
+                style={[styles.input]}
               />
 
-              {error && <Text style={styles.error}>{error.message}</Text>}
+              {error && isTouched && (
+                <Text style={styles.error}>{error.message}</Text>
+              )}
             </>
           )}
         />
@@ -190,6 +202,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     width: "90%",
     textAlign: "left",
+  },
+  passwordContainer: {
+    width: "90%",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 12,
   },
   asterisk: {
     color: "red",
