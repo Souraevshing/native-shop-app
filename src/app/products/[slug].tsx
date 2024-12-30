@@ -10,19 +10,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useToast } from "react-native-toast-notifications";
+import { ActivityIndicator } from "react-native-paper";
 
+import { fetchProduct } from "../../api/api";
+import { useCustomToast } from "../../hooks/use-toast";
 import useCartStore from "../../store/cart";
-import { PRODUCTS } from "../../utils/products";
 
 export default function ProductDetails() {
+  const { showError, showSuccess } = useCustomToast();
+
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const toast = useToast();
+  const { data: product, error, isLoading } = fetchProduct(slug);
 
   const { items, addItems, removeItems, addProducts } = useCartStore();
-
-  const product = PRODUCTS.find((product) => product.slug === slug);
 
   // fetch cart details
   const cartItems = items.find((item) => item.id === product?.id);
@@ -67,6 +68,14 @@ export default function ProductDetails() {
     []
   );
 
+  if (error) {
+    return <Text>{error.message}</Text>;
+  }
+
+  if (isLoading) {
+    <ActivityIndicator size={"small"} color="blue" />;
+  }
+
   // show 404 if product not found
   if (!product) {
     return <Redirect href="/404" />;
@@ -76,11 +85,11 @@ export default function ProductDetails() {
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: product.title,
+          title: product.title!,
           headerTitleAlign: "center",
         }}
       />
-      <Image source={product.heroImage} style={styles.heroImage} />
+      <Image source={{ uri: product.heroImage }} style={styles.heroImage} />
       <View style={{ padding: 15, flex: 1 }}>
         <Text style={styles.title}>{product.title}</Text>
         <Text style={styles.slug}>Slug: {slug}</Text>
@@ -106,7 +115,7 @@ export default function ProductDetails() {
           </Text>
         </View>
         <FlatList
-          data={product.imageUrl}
+          data={product.imagesUrl}
           keyExtractor={(_item, index) => index.toString()}
           renderItem={renderItem}
           horizontal

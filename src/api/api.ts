@@ -25,3 +25,22 @@ export const fetchProductsAndCategories = () => {
     },
   });
 };
+
+export const fetchProduct = (slug: string) => {
+  return useQuery({
+    queryKey: ["product", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (error) {
+        throw new Error("Error fetching product");
+      }
+
+      return data;
+    },
+  });
+};
