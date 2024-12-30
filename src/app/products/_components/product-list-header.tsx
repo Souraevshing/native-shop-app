@@ -11,24 +11,31 @@ import {
   View,
 } from "react-native";
 
+import { Tables } from "../../../../types/database";
 import { useCustomToast } from "../../../hooks/use-toast";
 import { supabase } from "../../../lib/supabase";
 import { useAuth } from "../../../providers/auth-provider";
 import useCartStore from "../../../store/cart";
-import { Category } from "../../../types/global";
-import { CATEGORIES } from "../../../utils/categories";
 
-export default function ProductHeader() {
+export default function ProductHeader({
+  categories,
+}: {
+  categories: Tables<"category">[];
+}) {
+  console.log(categories);
+
   const { getTotalItemsCount } = useCartStore();
   const { user } = useAuth();
   const { showError, showSuccess } = useCustomToast();
 
   // render category as memoized fn to optimize performance
-  const renderItem = useCallback(({ item }: { item: Category }) => {
+  const renderItem = useCallback(({ item }: { item: Tables<"category"> }) => {
+    console.log("category", item);
+
     return (
       <Link asChild href={`/categories/${item.slug}`}>
         <Pressable style={styles.category}>
-          <Image source={{ uri: item.image }} style={styles.categoryImage} />
+          <Image source={{ uri: item.imageUrl }} style={styles.categoryImage} />
           <Text style={styles.categoryText}>{item.name}</Text>
         </Pressable>
       </Link>
@@ -95,12 +102,12 @@ export default function ProductHeader() {
       <View style={styles.categoriesContainer}>
         <Text style={styles.sectionTitle}>Categories</Text>
         <FlatList
-          data={CATEGORIES}
+          data={categories}
           renderItem={renderItem}
           initialNumToRender={5}
           windowSize={3}
           removeClippedSubviews={true}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item) => item.id.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
         />

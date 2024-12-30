@@ -4,7 +4,7 @@ import * as aesjs from "aes-js";
 import * as SecureStore from "expo-secure-store";
 import "react-native-get-random-values";
 
-import { Database } from "../types/database";
+import { Database } from "../../types/database";
 
 // As Expo's SecureStore does not support values larger than 2048
 // bytes, an AES-256 key is generated and stored in SecureStore, while

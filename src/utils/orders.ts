@@ -1,4 +1,4 @@
-import { Order } from "../types/global";
+import { Order } from "../../types/global";
 
 export const ORDERS: Order[] = [
   {

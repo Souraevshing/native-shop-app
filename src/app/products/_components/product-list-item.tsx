@@ -2,21 +2,21 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Product } from "../../../types/global";
+import { Tables } from "../../../../types/database";
 
 export default function ProductListItem({
-  products: { title, heroImage, price, slug },
+  product,
 }: {
-  products: Product;
+  product: Tables<"product">;
 }) {
   return (
-    <Link asChild href={`/products/${slug}`}>
+    <Link asChild href={`/products/${product.slug}`}>
       <Pressable>
         <View style={styles.itemImageContainer}>
-          <Image source={heroImage} style={styles.itemImage} />
+          <Image source={{ uri: product.heroImage }} style={styles.itemImage} />
         </View>
         <View style={styles.itemTextContainer}>
-          <Text style={styles.itemTitle}>{title}</Text>
+          <Text style={styles.itemTitle}>{product.title}</Text>
           <Text style={styles.itemPrice}>
             <FontAwesome
               name="inr"
@@ -24,7 +24,7 @@ export default function ProductListItem({
               color="black"
               style={styles.itemPrice}
             />{" "}
-            {price}
+            {product.price}
           </Text>
         </View>
       </Pressable>

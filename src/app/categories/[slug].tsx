@@ -2,7 +2,7 @@ import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
-import { Product } from "../../types/global";
+import { Product } from "../../../types/global";
 import { CATEGORIES } from "../../utils/categories";
 import { PRODUCTS } from "../../utils/products";
 import ProductListItem from "../products/_components/product-list-item";

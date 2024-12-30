@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 
+import { AuthState, User } from "../../types/global";
 import { supabase } from "../lib/supabase";
-import { AuthState, User } from "../types/global";
 
 // Create AuthContext with a default value
 const AuthContext = createContext<AuthState>({

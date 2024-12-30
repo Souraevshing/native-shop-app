@@ -14,8 +14,8 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 
+import { RootStackParamList } from "../../types/navigation";
 import useCartStore from "../store/cart";
-import { RootStackParamList } from "../types/navigation";
 
 const CartItemComponent = ({
   item,

@@ -4,7 +4,7 @@ import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { Button, Divider } from "react-native-paper";
 
-import { RootStackParamList } from "../types/navigation";
+import { RootStackParamList } from "../../types/navigation";
 
 export default function NotFoundScreen() {
   const navigation =

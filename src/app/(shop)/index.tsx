@@ -1,22 +1,37 @@
 import React, { memo, useCallback } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { Product } from "../../types/global";
-import { PRODUCTS } from "../../utils/products";
+import { ActivityIndicator } from "react-native-paper";
+import { Tables } from "../../../types/database";
+import { fetchProductsAndCategories } from "../../api/api";
 import ProductHeader from "../products/_components/product-list-header";
 import ProductListItem from "../products/_components/product-list-item";
 
 const Shop = () => {
+  const { data, error, isLoading } = fetchProductsAndCategories();
+
+  console.log(data);
+
   // render individual items
-  const renderItem = useCallback(({ item }: { item: Product }) => {
-    return <ProductListItem products={item} />;
+  const renderItem = useCallback(({ item }: { item: Tables<"product"> }) => {
+    return <ProductListItem product={item} />;
   }, []);
+
+  if (error) {
+    return <Text>{error.message}</Text>;
+  }
+
+  if (isLoading) {
+    return (
+      <ActivityIndicator style={{ width: 50, height: 50 }} color={"blue"} />
+    );
+  }
 
   return (
     <>
       <View>
         <FlatList
-          data={PRODUCTS}
+          data={data?.products}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           initialNumToRender={5}

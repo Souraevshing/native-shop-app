@@ -5,6 +5,7 @@ export declare type Category = {
   name: string;
   image: string;
   slug: string;
+  imageUrl: string;
   products: Product[];
 };
 
@@ -22,7 +23,7 @@ export type Product = {
   id: number;
   title: string;
   slug: string;
-  imageUrl: ImageSourcePropType[];
+  imageUrl: string[] | null;
   price: number;
   heroImage: ImageSourcePropType;
   category?: Omit<Category, "products">;

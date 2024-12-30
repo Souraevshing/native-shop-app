@@ -1,4 +1,4 @@
-import { Category } from "../types/global";
+import { Category } from "../../types/global";
 import { PRODUCTS } from "./products";
 
 export const CATEGORIES: Category[] = [

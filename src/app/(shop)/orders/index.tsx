@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import { Order } from "../../../types/global";
+import { Order } from "../../../../types/global";
 import { ORDERS } from "../../../utils/orders";
 
 const showOrderStatus: Record<string, string> = {
