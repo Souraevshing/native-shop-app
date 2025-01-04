@@ -23,7 +23,11 @@ const Shop = () => {
 
   if (isLoading) {
     return (
-      <ActivityIndicator style={{ width: 50, height: 50 }} color={"blue"} />
+      <ActivityIndicator
+        style={{ width: 50, height: 50 }}
+        color={"blue"}
+        animating
+      />
     );
   }
 

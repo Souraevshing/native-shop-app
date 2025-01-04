@@ -1,4 +1,8 @@
-import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  FontAwesome6,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -11,7 +15,6 @@ import {
   View,
 } from "react-native";
 
-import { ActivityIndicator } from "react-native-paper";
 import { Tables } from "../../../../types/database";
 import { useCustomToast } from "../../../hooks/use-toast";
 import { supabase } from "../../../lib/supabase";
@@ -65,7 +68,12 @@ export default function ProductHeader({
               color="black"
               style={styles.avatarImage}
             />
-            <Text style={styles.avatarText}>
+            <Text
+              style={[
+                styles.avatarText,
+                { fontWeight: "600", color: "#4a4e69" },
+              ]}
+            >
               Hello {user?.email.split("@")[0]}
             </Text>
           </View>
@@ -78,7 +86,7 @@ export default function ProductHeader({
                 <View>
                   <MaterialCommunityIcons
                     name="shopping"
-                    size={30}
+                    size={25}
                     color="black"
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />
@@ -97,11 +105,12 @@ export default function ProductHeader({
             delayPressOut={50}
             disabled={isSigningOut}
           >
-            {isSigningOut ? (
-              <ActivityIndicator size={"small"} color="#FB5607" />
-            ) : (
-              <MaterialCommunityIcons name="logout" size={30} color="#FB5607" />
-            )}
+            <MaterialIcons
+              name="logout"
+              size={25}
+              color="#eb5e28"
+              role="button"
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -165,6 +174,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   signOutButton: {
+    fontWeight: 900,
     padding: 10,
   },
   heroContainer: {
@@ -199,10 +209,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -5,
     right: 10,
-    backgroundColor: "#1BC464",
+    backgroundColor: "#fca311",
     borderRadius: 10,
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
     justifyContent: "center",
     alignItems: "center",
   },

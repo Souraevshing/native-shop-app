@@ -2,6 +2,7 @@ import { Redirect } from "expo-router";
 import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import {
+  Alert,
   ImageBackground,
   StyleSheet,
   Text,
@@ -9,16 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import { Alert } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
+
 import { useCustomToast } from "../hooks/use-toast";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../providers/auth-provider";
 import { AuthForm, useAuthForm } from "../schema/auth.schema";
+import SpinningLoader from "./components/loader";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [isSignupLoading, setIsSignupLoading] = useState(false);
 
   const { showSuccess, showError } = useCustomToast();
 
@@ -32,6 +35,7 @@ export default function Auth() {
 
   const handleLogIn = async (data: AuthForm) => {
     setLoading(true);
+    setIsLoginLoading(true);
 
     if (!data.email || !data.password) {
       Alert.alert("Mandatory", "All fields are mandatory", [
@@ -41,6 +45,7 @@ export default function Auth() {
         },
         { text: "OK", style: "default", isPreferred: true },
       ]);
+      setLoading(false);
       return;
     }
 
@@ -63,11 +68,27 @@ export default function Auth() {
     reset();
   };
 
-  const handleSignUp = async ({ email, password }: AuthForm) => {
+  const handleSignUp = async (data: AuthForm) => {
     setLoading(true);
+    setIsSignupLoading(true);
+
+    if (!data.email || !data.password) {
+      Alert.alert("Mandatory", "All fields are mandatory", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        { text: "OK", style: "default", isPreferred: true },
+      ]);
+      setLoading(false);
+      return;
+    }
 
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+      });
 
       showSuccess("Account created successfully");
 
@@ -86,14 +107,19 @@ export default function Auth() {
 
   return (
     <>
-      {loading && <ActivityIndicator color="#0000ff" size="small" />}
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator color="#0000ff" size="large" animating />
+        </View>
+      )}
+
       <ImageBackground
         source={require("../../assets/images/auth-bg.jpg")}
         style={styles.backgroundImage}
       >
         <View style={styles.overlay} />
         <View style={styles.container}>
-          <Text style={styles.title}>Hello, Welcome</Text>
+          <Text style={styles.title}>Hello, Welcome 🎉</Text>
 
           {/* Email Address */}
           <Text style={styles.emailLabel}>
@@ -170,7 +196,11 @@ export default function Auth() {
               loading && { opacity: 0.5 },
             ]}
           >
-            <Text style={[styles.buttonText]}>Log In</Text>
+            {isLoginLoading ? (
+              <SpinningLoader />
+            ) : (
+              <Text style={[styles.buttonText]}>Log In</Text>
+            )}
           </TouchableOpacity>
 
           {/* Sign Up Button */}
@@ -188,7 +218,11 @@ export default function Auth() {
               loading && { opacity: 0.5 },
             ]}
           >
-            <Text style={[styles.buttonText]}>Sign Up</Text>
+            {isSignupLoading ? (
+              <SpinningLoader />
+            ) : (
+              <Text style={[styles.buttonText]}>Sign Up</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -257,10 +291,10 @@ const styles = StyleSheet.create({
     width: "90%",
     padding: 12,
     marginBottom: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "rgba(16, 16, 16, 0.9)",
     borderRadius: 8,
     fontSize: 16,
-    color: "#000",
+    color: "#FFF",
   },
   button: {
     width: "90%",
@@ -270,15 +304,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#2454FF",
-    shadowColor: "#2454FF",
+    backgroundColor: "#2b2d42",
+    borderColor: "#e5e5e5",
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 3,
   },
   signUpButton: {
-    backgroundColor: "transparent",
-    borderColor: "#2454FF",
+    backgroundColor: "#403d39",
+    borderColor: "#adb5bd",
     borderWidth: 2,
   },
   buttonText: {
@@ -295,5 +329,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: "center",
     width: "90%",
+  },
+  loaderContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 });

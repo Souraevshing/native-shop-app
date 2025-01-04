@@ -1,50 +1,60 @@
-import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, Button } from "react-native-paper";
 import { Tables } from "../../../types/database";
 import { useFetchCategoriesAndProducts } from "../../api/api";
 import ProductListItem from "../products/_components/product-list-item";
 
-// render single category based on slug
 export default function Category() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const { data, error, isLoading } = useFetchCategoriesAndProducts(slug);
+  const { data, error, isLoading, refetch } =
+    useFetchCategoriesAndProducts(slug);
 
-  // show not-found page for category not exist
-  if (!data?.category && !data?.products) {
-    return <Redirect href={"/404"} />;
-  }
+  const category = data?.category;
+  const products = data?.products;
 
   if (isLoading) {
-    return <ActivityIndicator size="small" color="blue" />;
+    return <ActivityIndicator size="small" color="blue" animating />;
   }
 
-  if (error) {
+  if (!category && !products) {
     return (
-      <Text style={{ textAlign: "center", color: "red" }}>{error.message}</Text>
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ color: "red", fontWeight: "400" }}>
+          {error?.message || "No data available"}
+        </Text>
+        <Button onPress={() => refetch()}>
+          <Text>Try again</Text>
+        </Button>
+      </View>
     );
   }
 
-  const { category, products } = data;
-
-  const renderItem = useCallback(({ item }: { item: Tables<"product"> }) => {
-    return <ProductListItem product={item} />;
-  }, []);
+  // Use `useCallback` to memoize the render function
+  const renderItem = useCallback(
+    ({ item }: { item: Tables<"product"> }) => (
+      <ProductListItem product={item} />
+    ),
+    []
+  );
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: category.name,
+          title: category?.name || "Category",
           headerTitleAlign: "center",
         }}
       />
 
-      <Image source={{ uri: category.imageUrl }} style={styles.categoryImage} />
-      <Text style={styles.categoryName}>{category.name}</Text>
+      <Image
+        source={{ uri: category?.imageUrl }}
+        style={styles.categoryImage}
+      />
+      <Text style={styles.categoryName}>{category?.name}</Text>
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}

@@ -1,5 +1,5 @@
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   FlatList,
@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, Button } from "react-native-paper";
 
 import { useFetchProduct } from "../../api/api";
 import { useCustomToast } from "../../hooks/use-toast";
@@ -22,7 +22,7 @@ export default function ProductDetails() {
 
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const { data: product, error, isLoading } = useFetchProduct(slug);
+  const { data: product, error, isLoading, refetch } = useFetchProduct(slug);
 
   const { items, addItems, removeItems, addProducts } = useCartStore();
 
@@ -70,33 +70,34 @@ export default function ProductDetails() {
     []
   );
 
-  if (error) {
-    showError(error.message);
+  if (!product) {
     return (
-      <Text style={{ textAlign: "center", color: "red" }}>{error.message}</Text>
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ color: "red", fontWeight: "400" }}>
+          {error?.message}
+        </Text>
+        <Button onPress={() => refetch()}>
+          <Text>Try again</Text>
+        </Button>
+      </View>
     );
   }
 
   if (isLoading) {
-    <ActivityIndicator size={"small"} color="blue" />;
-  }
-
-  // show 404 if product not found
-  if (!product) {
-    return <Redirect href="/404" />;
+    <ActivityIndicator size={"small"} color="blue" animating />;
   }
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: product.title!,
+          title: product?.title!,
           headerTitleAlign: "center",
         }}
       />
-      <Image source={{ uri: product.heroImage }} style={styles.heroImage} />
+      <Image source={{ uri: product!.heroImage! }} style={styles.heroImage} />
       <View style={{ padding: 15, flex: 1 }}>
-        <Text style={styles.title}>{product.title}</Text>
+        <Text style={styles.title}>{product!.title}</Text>
         <Text style={styles.slug}>Slug: {slug}</Text>
         <View style={styles.priceContainer}>
           <Text style={[styles.price, { color: "grey" }]}>
@@ -106,7 +107,7 @@ export default function ProductDetails() {
               color="black"
               style={{ fontSize: 14, color: "grey" }}
             />{" "}
-            {product.price.toFixed(2)}
+            {product!.price.toFixed(2)}
           </Text>
           <Text style={styles.price}>
             Total:{" "}
@@ -116,11 +117,11 @@ export default function ProductDetails() {
               color="black"
               style={styles.priceSymbol}
             />{" "}
-            {(product.price * quantity).toFixed(2)}
+            {(product!.price * quantity).toFixed(2)}
           </Text>
         </View>
         <FlatList
-          data={product.imagesUrl}
+          data={product!.imagesUrl}
           keyExtractor={(_item, index) => index.toString()}
           renderItem={renderItem}
           horizontal
@@ -149,15 +150,15 @@ export default function ProductDetails() {
           <Text style={styles.quantity}>{quantity}</Text>
           <TouchableOpacity
             onPress={increaseItems}
-            disabled={quantity >= product.maxQuantity!}
+            disabled={quantity >= product!.maxQuantity!}
             style={[
               styles.quantityButton,
-              quantity >= product.maxQuantity! && styles.disabledButton,
+              quantity >= product!.maxQuantity! && styles.disabledButton,
             ]}
           >
             <Text
               style={
-                quantity >= product.maxQuantity!
+                quantity >= product!.maxQuantity!
                   ? styles.disabledButtonText
                   : styles.quantityButtonText
               }

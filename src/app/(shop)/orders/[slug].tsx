@@ -1,7 +1,8 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
+import { Button } from "react-native-paper";
 import { ORDERS } from "../../../utils/orders";
 
 export default function OrderDetails() {
@@ -9,7 +10,16 @@ export default function OrderDetails() {
   const order = ORDERS.find((order) => order.slug === slug);
 
   if (!order) {
-    return <Redirect href={"/404"} />;
+    return (
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ color: "red", fontWeight: "400" }}>
+          {"No data available"}
+        </Text>
+        <Button>
+          <Text>Try again</Text>
+        </Button>
+      </View>
+    );
   }
 
   return (

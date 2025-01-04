@@ -9,7 +9,11 @@ export default function ProductLayout() {
         name="[slug]"
         options={({ navigation }) => ({
           headerShown: true,
-          headerLeft: () => {
+          headerLeft: ({ canGoBack }) => {
+            if (!canGoBack) {
+              return null;
+            }
+
             return (
               <TouchableOpacity
                 onPress={() => {
