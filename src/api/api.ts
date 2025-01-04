@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 
 /**
- * fetch products and categories by querying
- * @returns products and categories
+ * Fetches all products and categories from the database.
+ *
+ * @returns An object containing lists of products and categories.
  */
-export const fetchProductsAndCategories = () => {
+export const useFetchProductsAndCategories = () => {
   return useQuery({
     queryKey: ["products", "categories"],
     queryFn: async () => {
@@ -15,7 +16,11 @@ export const fetchProductsAndCategories = () => {
       ]);
 
       if (products.error || categories.error) {
-        throw new Error("Error fetching products and categories");
+        throw new Error(
+          `Error fetching products and categories: ${
+            products.error?.message || categories.error?.message
+          }`
+        );
       }
 
       return {
@@ -26,7 +31,13 @@ export const fetchProductsAndCategories = () => {
   });
 };
 
-export const fetchProduct = (slug: string) => {
+/**
+ * Fetches details of a single product by its slug.
+ *
+ * @param slug - The unique identifier for the product.
+ * @returns The product details.
+ */
+export const useFetchProduct = (slug: string) => {
   return useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
@@ -37,10 +48,46 @@ export const fetchProduct = (slug: string) => {
         .single();
 
       if (error) {
-        throw new Error("Error fetching product");
+        throw new Error(`Error fetching product ${error.message}`);
       }
 
       return data;
+    },
+  });
+};
+
+/**
+ * Fetches details of a category and associated products by the category slug.
+ *
+ * @param slug - The unique identifier for the category.
+ * @returns An object containing the category details and its associated products.
+ */
+export const useFetchCategoriesAndProducts = (categorySlug: string) => {
+  return useQuery({
+    queryKey: ["categoriesAndProducts", categorySlug],
+    queryFn: async () => {
+      const { data: category, error: categoryError } = await supabase
+        .from("category")
+        .select("*")
+        .eq("slug", categorySlug)
+        .single();
+
+      if (categoryError) {
+        throw new Error(`Error fetching category ${categoryError.message}`);
+      }
+
+      const { data: products, error: productsError } = await supabase
+        .from("product")
+        .select("*")
+        .eq("category", category.id);
+
+      if (productsError) {
+        throw new Error(
+          `Error fetching products for the category ${productsError.message}`
+        );
+      }
+
+      return { category, products };
     },
   });
 };

@@ -1,6 +1,6 @@
 import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   FlatList,
   Image,
@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 
+import { ActivityIndicator } from "react-native-paper";
 import { Tables } from "../../../../types/database";
 import { useCustomToast } from "../../../hooks/use-toast";
 import { supabase } from "../../../lib/supabase";
@@ -22,16 +23,13 @@ export default function ProductHeader({
 }: {
   categories: Tables<"category">[];
 }) {
-  console.log(categories);
-
   const { getTotalItemsCount } = useCartStore();
   const { user } = useAuth();
   const { showError, showSuccess } = useCustomToast();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // render category as memoized fn to optimize performance
   const renderItem = useCallback(({ item }: { item: Tables<"category"> }) => {
-    console.log("category", item);
-
     return (
       <Link asChild href={`/categories/${item.slug}`}>
         <Pressable style={styles.category}>
@@ -43,8 +41,17 @@ export default function ProductHeader({
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    showSuccess("Logged out successfully");
+    setIsSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      showSuccess("Logged out successfully");
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   return (
@@ -88,8 +95,13 @@ export default function ProductHeader({
             style={styles.signOutButton}
             delayPressIn={50}
             delayPressOut={50}
+            disabled={isSigningOut}
           >
-            <MaterialCommunityIcons name="logout" size={30} color="#FB5607" />
+            {isSigningOut ? (
+              <ActivityIndicator size={"small"} color="#FB5607" />
+            ) : (
+              <MaterialCommunityIcons name="logout" size={30} color="#FB5607" />
+            )}
           </TouchableOpacity>
         </View>
       </View>

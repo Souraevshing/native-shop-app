@@ -12,16 +12,17 @@ import {
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 
-import { fetchProduct } from "../../api/api";
+import { useFetchProduct } from "../../api/api";
 import { useCustomToast } from "../../hooks/use-toast";
 import useCartStore from "../../store/cart";
 
+// render single product
 export default function ProductDetails() {
   const { showError, showSuccess } = useCustomToast();
 
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const { data: product, error, isLoading } = fetchProduct(slug);
+  const { data: product, error, isLoading } = useFetchProduct(slug);
 
   const { items, addItems, removeItems, addProducts } = useCartStore();
 
@@ -58,6 +59,7 @@ export default function ProductDetails() {
       quantity,
       maxQuantity: product?.maxQuantity!,
     });
+    showSuccess("Products added");
   };
 
   const renderItem = useCallback(
@@ -69,7 +71,10 @@ export default function ProductDetails() {
   );
 
   if (error) {
-    return <Text>{error.message}</Text>;
+    showError(error.message);
+    return (
+      <Text style={{ textAlign: "center", color: "red" }}>{error.message}</Text>
+    );
   }
 
   if (isLoading) {
@@ -94,12 +99,12 @@ export default function ProductDetails() {
         <Text style={styles.title}>{product.title}</Text>
         <Text style={styles.slug}>Slug: {slug}</Text>
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>
+          <Text style={[styles.price, { color: "grey" }]}>
             <FontAwesome
               name="inr"
               size={24}
               color="black"
-              style={styles.priceSymbol}
+              style={{ fontSize: 14, color: "grey" }}
             />{" "}
             {product.price.toFixed(2)}
           </Text>

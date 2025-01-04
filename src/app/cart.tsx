@@ -5,7 +5,6 @@ import { StatusBar } from "expo-status-bar";
 import {
   FlatList,
   Image,
-  ImageSourcePropType,
   Platform,
   StyleSheet,
   Text,
@@ -14,7 +13,9 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 
+import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParamList } from "../../types/navigation";
+import { useCustomToast } from "../hooks/use-toast";
 import useCartStore from "../store/cart";
 
 const CartItemComponent = ({
@@ -26,7 +27,7 @@ const CartItemComponent = ({
   item: {
     id: number;
     title: string;
-    heroImage: ImageSourcePropType;
+    heroImage: string;
     price: number;
     quantity: number;
     maxQuantity: number;
@@ -35,12 +36,22 @@ const CartItemComponent = ({
   onIncrement: (id: number) => void;
   onDecrement: (id: number) => void;
 }) => {
+  const { showInfo } = useCustomToast();
+
   return (
     <View style={styles.cartItem}>
-      <Image source={item.heroImage} style={styles.itemImage} />
+      <Image source={{ uri: item.heroImage }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+        <Text style={styles.itemPrice}>
+          <FontAwesome
+            name="inr"
+            size={24}
+            color="grey"
+            style={{ fontSize: 14, fontWeight: 400 }}
+          />{" "}
+          {item.price.toFixed(2)}
+        </Text>
         <View style={styles.quantityContainer}>
           <TouchableOpacity
             onPress={() => onDecrement(item.id)}
@@ -63,7 +74,10 @@ const CartItemComponent = ({
       </View>
 
       <TouchableOpacity
-        onPress={() => onRemove(item.id)}
+        onPress={() => {
+          onRemove(item.id);
+          showInfo("Item removed");
+        }}
         style={styles.removeButton}
       >
         <Text style={styles.removeButtonText}>Remove</Text>
@@ -81,6 +95,8 @@ export default function Cart() {
     getTotalItemsCount,
     removeProducts,
   } = useCartStore();
+
+  const { showSuccess } = useCustomToast();
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -108,49 +124,53 @@ export default function Cart() {
     );
   }
 
-  const handleCheckout = () => {};
+  const handleCheckout = () => {
+    showSuccess("checkout");
+  };
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        style={Platform.OS === "android" ? "dark" : "auto"}
-        hideTransitionAnimation="slide"
-        animated
-      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar
+          style={Platform.OS === "android" ? "dark" : "auto"}
+          hideTransitionAnimation="slide"
+          animated
+        />
 
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => {
-          return (
-            <CartItemComponent
-              item={item}
-              onRemove={removeProducts}
-              onIncrement={addItems}
-              onDecrement={removeItems}
-            />
-          );
-        }}
-        contentContainerStyle={styles.cartList}
-      />
-      <View style={styles.footer}>
-        <Text style={styles.totalText}>
-          Total:{" "}
-          <FontAwesome
-            name="inr"
-            size={24}
-            color="black"
-            style={styles.priceSymbol}
-          />{" "}
-          {getTotalPrice()}
-        </Text>
-        <TouchableOpacity
-          onPress={handleCheckout}
-          style={styles.checkoutButton}
-        >
-          <Text style={styles.checkoutButtonText}>Checkout</Text>
-        </TouchableOpacity>
-      </View>
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => {
+            return (
+              <CartItemComponent
+                item={item}
+                onRemove={removeProducts}
+                onIncrement={addItems}
+                onDecrement={removeItems}
+              />
+            );
+          }}
+          contentContainerStyle={styles.cartList}
+        />
+        <View style={styles.footer}>
+          <Text style={styles.totalText}>
+            Total:{" "}
+            <FontAwesome
+              name="inr"
+              size={24}
+              color="black"
+              style={styles.priceSymbol}
+            />{" "}
+            {getTotalPrice()}
+          </Text>
+          <TouchableOpacity
+            onPress={handleCheckout}
+            style={styles.checkoutButton}
+          >
+            <Text style={styles.checkoutButtonText}>Checkout</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -160,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     color: "#000",
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   cartList: {
     paddingVertical: 16,

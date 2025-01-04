@@ -1,16 +1,14 @@
-import React, { memo, useCallback } from "react";
+import React, { useCallback } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { ActivityIndicator } from "react-native-paper";
 import { Tables } from "../../../types/database";
-import { fetchProductsAndCategories } from "../../api/api";
+import { useFetchProductsAndCategories } from "../../api/api";
 import ProductHeader from "../products/_components/product-list-header";
 import ProductListItem from "../products/_components/product-list-item";
 
 const Shop = () => {
-  const { data, error, isLoading } = fetchProductsAndCategories();
-
-  console.log(data);
+  const { data, error, isLoading } = useFetchProductsAndCategories();
 
   // render individual items
   const renderItem = useCallback(({ item }: { item: Tables<"product"> }) => {
@@ -18,7 +16,9 @@ const Shop = () => {
   }, []);
 
   if (error) {
-    return <Text>{error.message}</Text>;
+    return (
+      <Text style={{ textAlign: "center", color: "red" }}>{error.message}</Text>
+    );
   }
 
   if (isLoading) {
@@ -38,7 +38,9 @@ const Shop = () => {
           windowSize={3}
           removeClippedSubviews={true}
           numColumns={1}
-          ListHeaderComponent={memo(ProductHeader)}
+          ListHeaderComponent={
+            <ProductHeader categories={data?.categories ?? []} />
+          }
           contentContainerStyle={styles.flatListContent}
           style={{
             paddingHorizontal: 10,

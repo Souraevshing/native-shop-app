@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { CartItem, CartState } from "../../types/store";
 
 const useCartStore = create<CartState>((set, get) => ({
@@ -41,7 +42,9 @@ const useCartStore = create<CartState>((set, get) => ({
   addItems: (id: number) => {
     set((state) => ({
       items: state.items.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === id && item.quantity < item.maxQuantity
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       ),
     }));
   },

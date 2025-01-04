@@ -6,7 +6,6 @@ import { ORDERS } from "../../../utils/orders";
 
 export default function OrderDetails() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  console.log(slug);
   const order = ORDERS.find((order) => order.slug === slug);
 
   if (!order) {

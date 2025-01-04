@@ -7,19 +7,39 @@ export const useCustomToast = () => {
     message: string | JSX.Element,
     options?: ToastOptions
   ) => {
-    toast.show(message, { type: "success", ...options });
+    toast.show(message, {
+      type: "success",
+      ...options,
+      animationType: "slide-in",
+    });
   };
 
   const showError = (message: string | JSX.Element, options?: ToastOptions) => {
-    toast.show(message, { type: "danger", ...options });
+    toast.show(message, {
+      type: "danger",
+      ...options,
+      animationType: "slide-in",
+    });
   };
 
   const showWarning = (
     message: string | JSX.Element,
     options?: ToastOptions
   ) => {
-    toast.show(message, { type: "warning", ...options });
+    toast.show(message, {
+      type: "warning",
+      ...options,
+      animationType: "slide-in",
+    });
   };
 
-  return { showSuccess, showError, showWarning };
+  const showInfo = (message: string | JSX.Element, options?: ToastOptions) => {
+    toast.show(message, {
+      type: "normal",
+      ...options,
+      animationType: "slide-in",
+    });
+  };
+
+  return { showSuccess, showError, showWarning, showInfo };
 };

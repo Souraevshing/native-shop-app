@@ -2,28 +2,36 @@ import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
-import { Product } from "../../../types/global";
-import { CATEGORIES } from "../../utils/categories";
-import { PRODUCTS } from "../../utils/products";
+import { ActivityIndicator } from "react-native-paper";
+import { Tables } from "../../../types/database";
+import { useFetchCategoriesAndProducts } from "../../api/api";
 import ProductListItem from "../products/_components/product-list-item";
 
-// render single item based on slug
+// render single category based on slug
 export default function Category() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
-  const category = CATEGORIES.find((category) => category.slug === slug);
-
-  const products = PRODUCTS.filter(
-    (product) => product.category?.slug === slug
-  );
+  const { data, error, isLoading } = useFetchCategoriesAndProducts(slug);
 
   // show not-found page for category not exist
-  if (!category) {
+  if (!data?.category && !data?.products) {
     return <Redirect href={"/404"} />;
   }
 
-  const renderItem = useCallback(({ item }: { item: Product }) => {
-    return <ProductListItem products={item} />;
+  if (isLoading) {
+    return <ActivityIndicator size="small" color="blue" />;
+  }
+
+  if (error) {
+    return (
+      <Text style={{ textAlign: "center", color: "red" }}>{error.message}</Text>
+    );
+  }
+
+  const { category, products } = data;
+
+  const renderItem = useCallback(({ item }: { item: Tables<"product"> }) => {
+    return <ProductListItem product={item} />;
   }, []);
 
   return (
@@ -35,7 +43,7 @@ export default function Category() {
         }}
       />
 
-      <Image source={{ uri: category.image }} style={styles.categoryImage} />
+      <Image source={{ uri: category.imageUrl }} style={styles.categoryImage} />
       <Text style={styles.categoryName}>{category.name}</Text>
       <FlatList
         data={products}

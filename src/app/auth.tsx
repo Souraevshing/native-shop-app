@@ -10,14 +10,15 @@ import {
   View,
 } from "react-native";
 
+import { Alert } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import { useCustomToast } from "../hooks/use-toast";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../providers/auth-provider";
 import { AuthForm, useAuthForm } from "../schema/auth.schema";
 
 export default function Auth() {
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { showSuccess, showError } = useCustomToast();
 
@@ -30,136 +31,168 @@ export default function Auth() {
   }
 
   const handleLogIn = async (data: AuthForm) => {
+    setLoading(true);
+
     if (!data.email || !data.password) {
-      setModalMessage("All fields are required!");
-      setShowModal(true);
+      Alert.alert("Mandatory", "All fields are mandatory", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        { text: "OK", style: "default", isPreferred: true },
+      ]);
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
-    if (error) {
-      showError(`${error.message}`);
-    } else {
-      showSuccess(`Logged in successfully `);
+      showSuccess("Logged in successfully");
+
+      if (error) {
+        showError(error.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) showError(error.message);
+    } finally {
+      setLoading(false);
     }
-
     reset();
   };
 
   const handleSignUp = async ({ email, password }: AuthForm) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    setLoading(true);
 
-    showSuccess(`Account created successfully`);
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
 
-    if (error) {
-      showError(`${error.message}`);
+      showSuccess("Account created successfully");
+
+      if (error) {
+        showError(error.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
-
     reset();
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/auth-bg.jpg")}
-      style={styles.backgroundImage}
-    >
-      <View style={styles.overlay} />
-      <View style={styles.container}>
-        <Text style={styles.title}>Hello, Welcome</Text>
+    <>
+      {loading && <ActivityIndicator color="#0000ff" size="small" />}
+      <ImageBackground
+        source={require("../../assets/images/auth-bg.jpg")}
+        style={styles.backgroundImage}
+      >
+        <View style={styles.overlay} />
+        <View style={styles.container}>
+          <Text style={styles.title}>Hello, Welcome</Text>
 
-        {/* Email Address */}
-        <Text style={styles.emailLabel}>
-          Email <Text style={styles.asterisk}>*</Text>
-        </Text>
-        <Controller
-          control={control}
-          name="email"
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error, isTouched },
-          }) => (
-            <>
-              <TextInput
-                placeholderTextColor={"#b5c6e0"}
-                placeholder="Enter email address"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="none"
-                editable={!formState.isSubmitting}
-                style={styles.input}
-              />
-              {error && isTouched && (
-                <Text style={styles.error}>{error.message}</Text>
-              )}
-            </>
-          )}
-        />
+          {/* Email Address */}
+          <Text style={styles.emailLabel}>
+            Email <Text style={styles.asterisk}>*</Text>
+          </Text>
+          <Controller
+            control={control}
+            name="email"
+            render={({
+              field: { onChange, onBlur, value },
+              fieldState: { error, isTouched },
+            }) => (
+              <>
+                <TextInput
+                  placeholderTextColor={"#b5c6e0"}
+                  placeholder="Enter email address"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoCapitalize="none"
+                  editable={!formState.isSubmitting}
+                  style={styles.input}
+                />
+                {error && isTouched && (
+                  <Text style={styles.error}>{error.message}</Text>
+                )}
+              </>
+            )}
+          />
 
-        {/* Password */}
-        <Text style={styles.passwordLabel}>
-          Password <Text style={styles.asterisk}>*</Text>
-        </Text>
-        <Controller
-          control={control}
-          name="password"
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error, isTouched },
-          }) => (
-            <>
-              <TextInput
-                secureTextEntry
-                placeholderTextColor={"#b5c6e0"}
-                placeholder="Enter password"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="none"
-                editable={!formState.isSubmitting}
-                style={[styles.input]}
-              />
+          {/* Password */}
+          <Text style={styles.passwordLabel}>
+            Password <Text style={styles.asterisk}>*</Text>
+          </Text>
+          <Controller
+            control={control}
+            name="password"
+            render={({
+              field: { onChange, onBlur, value },
+              fieldState: { error, isTouched },
+            }) => (
+              <>
+                <TextInput
+                  secureTextEntry
+                  placeholderTextColor={"#b5c6e0"}
+                  placeholder="Enter password"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoCapitalize="none"
+                  editable={!formState.isSubmitting}
+                  style={[styles.input]}
+                />
 
-              {error && isTouched && (
-                <Text style={styles.error}>{error.message}</Text>
-              )}
-            </>
-          )}
-        />
+                {error && isTouched && (
+                  <Text style={styles.error}>{error.message}</Text>
+                )}
+              </>
+            )}
+          />
 
-        {/* Login Button */}
-        <TouchableOpacity
-          disabled={formState.isSubmitting}
-          focusable
-          role="button"
-          accessibilityLabel="Log In"
-          accessibilityHint="log in"
-          accessibilityRole="button"
-          onPress={handleSubmit(handleLogIn)}
-          style={[styles.button, styles.loginButton]}
-        >
-          <Text style={[styles.buttonText]}>Log In</Text>
-        </TouchableOpacity>
+          {/* Login Button */}
+          <TouchableOpacity
+            disabled={formState.isSubmitting || loading}
+            focusable
+            role="button"
+            accessibilityLabel="Log In"
+            accessibilityHint="log in"
+            accessibilityRole="button"
+            onPress={handleSubmit(handleLogIn)}
+            style={[
+              styles.button,
+              styles.loginButton,
+              loading && { opacity: 0.5 },
+            ]}
+          >
+            <Text style={[styles.buttonText]}>Log In</Text>
+          </TouchableOpacity>
 
-        {/* Sign Up Button */}
-        <TouchableOpacity
-          disabled={formState.isSubmitting}
-          focusable
-          role="button"
-          accessibilityLabel="Sign Up"
-          accessibilityHint="sign up"
-          accessibilityRole="button"
-          onPress={handleSubmit(handleSignUp)}
-          style={[styles.button, styles.signUpButton]}
-        >
-          <Text style={[styles.buttonText]}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
+          {/* Sign Up Button */}
+          <TouchableOpacity
+            disabled={formState.isSubmitting || loading}
+            focusable
+            role="button"
+            accessibilityLabel="Sign Up"
+            accessibilityHint="sign up"
+            accessibilityRole="button"
+            onPress={handleSubmit(handleSignUp)}
+            style={[
+              styles.button,
+              styles.signUpButton,
+              loading && { opacity: 0.5 },
+            ]}
+          >
+            <Text style={[styles.buttonText]}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    </>
   );
 }
 
@@ -260,7 +293,7 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginBottom: 16,
-    textAlign: "left",
+    textAlign: "center",
     width: "90%",
   },
 });
