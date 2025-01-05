@@ -43,5 +43,5 @@ export type User = {
 export type AuthState = {
   session: Session | null;
   mount: boolean;
-  user: User | null;
+  user: any;
 };

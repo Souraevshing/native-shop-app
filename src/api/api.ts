@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../providers/auth-provider";
 
 /**
  * Fetches all products and categories from the database.
@@ -91,3 +93,37 @@ export const useFetchCategoriesAndProducts = (categorySlug: string) => {
     },
   });
 };
+
+
+/**
+ * Fetches all orders for the authenticated user from the database.
+ *
+ * @returns A list of orders associated with the authenticated user.
+ */
+export const useFetchOrders=()=>{
+  const {
+    user:{id}
+  }=useAuth()
+
+  return useQuery({
+    queryKey: ["orders", id],
+    queryFn:async()=>{
+      const {data,error,}=await supabase
+      .from('order')
+      .select('*')
+      .order('created_at',{ascending:true})
+      .eq('user',id)
+
+      if(error) {
+        throw new Error(`Error fetching orders ${error.message}`)
+      }
+
+      return data
+
+    }
+
+
+
+  })
+
+}
