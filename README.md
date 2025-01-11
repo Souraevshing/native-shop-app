@@ -79,8 +79,6 @@ Join our community of developers creating universal apps.
 
 ## 🤖
 
-[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.dev/client)
-
 [![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.dev/client)
 
 [![Web](https://camo.githubusercontent.com/90bb642c71de43a70c7cfa0b1dc55d6ba6da8d7e10d5fca043483d213cc0faf4/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f7765622d3030302e7376673f7374796c653d666c61742d737175617265266c6f676f3d474f4f474c452d4348524f4d45266c6162656c436f6c6f723d343238354634266c6f676f436f6c6f723d666666)](https://expo.dev/client)
