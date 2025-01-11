@@ -8,36 +8,28 @@ import {
   Text,
   View,
 } from "react-native";
+import { ActivityIndicator, Button } from "react-native-paper";
 
-import { Order } from "../../../../types/global";
-import { ORDERS } from "../../../utils/orders";
+import { Tables } from "../../../../types/database";
+import { useFetchOrders } from "../../../api/api";
 
-const showOrderStatus: Record<string, string> = {
-  Pending: "Pending",
-  Shipped: "Shipped",
-  Completed: "Completed",
-  InTransit: "In Transit",
-};
-
-const renderItem: ListRenderItem<Order> = ({ item }) => {
+const renderItem: ListRenderItem<Tables<"order">> = ({ item }) => {
   return (
     <Link href={`/orders/${item.slug}`} asChild>
       <Pressable style={styles.orderContainer}>
         <View style={styles.orderContent}>
           <View style={styles.orderDetailsContainer}>
             <Text style={styles.orderItem}>{item.slug}</Text>
-            <Text style={styles.orderDetails}>{item.details}</Text>
+            <Text style={styles.orderDetails}>{item.description}</Text>
             <Text style={styles.orderDate}>
               {" "}
-              {moment(item.createdAt).format("ddd, DD MMMM yyyy")}
+              {moment(item.created_at).format("ddd, DD MMMM yyyy")}
             </Text>
           </View>
           <View
             style={[styles.statusBadge, styles[`statusBadge${item.status}`]]}
           >
-            <Text style={styles.statusText}>
-              {showOrderStatus[item.status]}
-            </Text>
+            <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
           </View>
         </View>
       </Pressable>
@@ -46,11 +38,30 @@ const renderItem: ListRenderItem<Order> = ({ item }) => {
 };
 
 export default function Orders() {
+  const { data, error, isLoading, refetch } = useFetchOrders();
+
+  if (isLoading) {
+    return <ActivityIndicator size="small" color="blue" animating />;
+  }
+
+  if (!data) {
+    return (
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Text style={{ color: "red", fontWeight: "400" }}>
+          {error?.message || "No data available"}
+        </Text>
+        <Button onPress={() => refetch()}>
+          <Text>Try again</Text>
+        </Button>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: "Orders" }} />
       <FlatList
-        data={ORDERS}
+        data={data}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
       />
@@ -58,7 +69,7 @@ export default function Orders() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles: { [key: string]: any } = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,

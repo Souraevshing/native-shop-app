@@ -1,28 +1,35 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useCallback } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
 import { ActivityIndicator, Button } from "react-native-paper";
 import { Tables } from "../../../types/database";
 import { useFetchCategoriesAndProducts } from "../../api/api";
+import { useCustomToast } from "../../hooks/use-toast";
 import ProductListItem from "../products/_components/product-list-item";
 
 export default function Category() {
+  const { showError } = useCustomToast();
+
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
   const { data, error, isLoading, refetch } =
     useFetchCategoriesAndProducts(slug);
 
-  const category = data?.category;
-  const products = data?.products;
-
   if (isLoading) {
     return <ActivityIndicator size="small" color="blue" animating />;
   }
 
-  if (!category && !products) {
+  if (!data!.category && !data!.products) {
+    showError(error?.message!);
+
     return (
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Text style={{ color: "red", fontWeight: "400" }}>
           {error?.message || "No data available"}
         </Text>
@@ -34,29 +41,28 @@ export default function Category() {
   }
 
   // Use `useCallback` to memoize the render function
-  const renderItem = useCallback(
-    ({ item }: { item: Tables<"product"> }) => (
-      <ProductListItem product={item} />
-    ),
-    []
+  const renderItem = ({ item }: { item: Tables<"product"> }) => (
+    <ProductListItem product={item} />
   );
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: category?.name || "Category",
+          title: data!.category?.name || "Category",
           headerTitleAlign: "center",
         }}
       />
 
-      <Image
-        source={{ uri: category?.imageUrl }}
-        style={styles.categoryImage}
-      />
-      <Text style={styles.categoryName}>{category?.name}</Text>
+      {data!.category?.imageUrl && (
+        <Image
+          source={{ uri: data!.category?.imageUrl }}
+          style={styles.categoryImage}
+        />
+      )}
+      <Text style={styles.categoryName}>{data!.category?.name}</Text>
       <FlatList
-        data={products}
+        data={data!.products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         numColumns={1}

@@ -3,6 +3,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
+  Alert,
   FlatList,
   Image,
   Platform,
@@ -12,9 +13,10 @@ import {
   View,
 } from "react-native";
 import { Button } from "react-native-paper";
-
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { RootStackParamList } from "../../types/navigation";
+import { useCreateOrder, useCreateOrderItem } from "../api/api";
 import { useCustomToast } from "../hooks/use-toast";
 import useCartStore from "../store/cart";
 
@@ -94,9 +96,13 @@ export default function Cart() {
     getTotalPrice,
     getTotalItemsCount,
     removeProducts,
+    resetCart,
   } = useCartStore();
 
   const { showSuccess } = useCustomToast();
+
+  const { mutateAsync: createSupabaseOrder } = useCreateOrder();
+  const { mutateAsync: createSupabaseOrderItem } = useCreateOrderItem();
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -124,8 +130,39 @@ export default function Cart() {
     );
   }
 
-  const handleCheckout = () => {
-    showSuccess("checkout");
+  const handleCheckout = async () => {
+    const totalPrice = getTotalPrice();
+    try {
+      await createSupabaseOrder(
+        {
+          totalPrice,
+        },
+        {
+          onSuccess(data) {
+            createSupabaseOrderItem(
+              items.map((item) => ({
+                orderId: data.id,
+                productId: item.id,
+                quantity: item.quantity,
+              })),
+              {
+                onSuccess() {
+                  Alert.alert("Success", "Order created successfully");
+                  resetCart();
+                },
+                onError() {
+                  Alert.alert("Error", "Order not created");
+                },
+              }
+            );
+          },
+        }
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
   };
 
   return (

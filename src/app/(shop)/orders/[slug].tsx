@@ -1,47 +1,74 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
+import moment from "moment";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Button } from "react-native-paper";
 
-import { Button } from "react-native-paper";
-import { ORDERS } from "../../../utils/orders";
+import { useFetchOrder } from "../../../api/api";
 
 export default function OrderDetails() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const order = ORDERS.find((order) => order.slug === slug);
 
-  if (!order) {
+  const { data, error, isLoading, refetch } = useFetchOrder(slug);
+
+  console.log(data);
+
+  const orderItems = data?.order_items.map((orderItem) => {
+    return {
+      id: orderItem.id,
+      title: orderItem.products.title,
+      heroImage: orderItem.products.heroImage,
+      price: orderItem.products.price,
+      quantity: orderItem.quantity,
+    };
+  });
+
+  if (!data) {
     return (
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Text style={{ color: "red", fontWeight: "400" }}>
-          {"No data available"}
+          {error?.message}
         </Text>
-        <Button>
+        <Button onPress={() => refetch()}>
           <Text>Try again</Text>
         </Button>
       </View>
     );
   }
 
+  if (isLoading) {
+    <ActivityIndicator size={"small"} color="blue" animating />;
+  }
+
   return (
     <View style={styles.container}>
       <Stack.Screen
-        options={{ title: `${order?.item}`, headerTitleAlign: "center" }}
+        options={{ title: `${data.slug}`, headerTitleAlign: "center" }}
       />
-      <Text style={styles.details}>{order?.details}</Text>
+      <Text style={styles.details}>{data.description}</Text>
 
-      <View
-        style={[styles.statusBadge, styles[`statusBadge${order?.status!}`]]}
-      >
-        <Text style={styles.statusText}>{order?.status}</Text>
+      <View style={[styles.statusBadge, styles[`statusBadge${data.status}`]]}>
+        <Text style={styles.statusText}>{data.status}</Text>
       </View>
-      <Text style={styles.date}>{order.createdAt}</Text>
+      <Text style={styles.date}>
+        {moment(data.created_at).format("MMMM Do YYYY, h:mm:ss A")}
+      </Text>
       <FlatList
-        data={order.items}
+        data={orderItems}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => {
           return (
             <View style={styles.orderItem}>
-              <Image source={item.heroImage} style={styles.heroImage} />
+              <Image
+                source={{ uri: item.heroImage }}
+                style={styles.heroImage}
+              />
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.title}</Text>
                 <Text style={styles.itemPrice}>
@@ -63,7 +90,7 @@ export default function OrderDetails() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles: { [key: string]: any } = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
@@ -80,11 +107,11 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     padding: 8,
-    borderRadius: 4,
+    borderRadius: 99,
     alignSelf: "flex-start",
   },
   statusBadgePending: {
-    backgroundColor: "orange",
+    backgroundColor: "#fca311",
   },
   statusBadgeCompleted: {
     backgroundColor: "green",
@@ -98,6 +125,7 @@ const styles = StyleSheet.create({
   statusText: {
     color: "#fff",
     fontWeight: "bold",
+    textTransform: "uppercase",
   },
   date: {
     fontSize: 14,

@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../providers/auth-provider";
+import { generateOrderSlug } from "../utils/generate-order-slug";
 
 /**
  * Fetches all products and categories from the database.
@@ -94,36 +95,144 @@ export const useFetchCategoriesAndProducts = (categorySlug: string) => {
   });
 };
 
-
 /**
  * Fetches all orders for the authenticated user from the database.
  *
  * @returns A list of orders associated with the authenticated user.
  */
-export const useFetchOrders=()=>{
+export const useFetchOrders = () => {
   const {
-    user:{id}
-  }=useAuth()
+    user: { id },
+  } = useAuth();
 
   return useQuery({
     queryKey: ["orders", id],
-    queryFn:async()=>{
-      const {data,error,}=await supabase
-      .from('order')
-      .select('*')
-      .order('created_at',{ascending:true})
-      .eq('user',id)
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order")
+        .select("*")
+        .order("created_at", { ascending: true })
+        .eq("user", id);
 
-      if(error) {
-        throw new Error(`Error fetching orders ${error.message}`)
+      if (error) {
+        throw new Error(`Error fetching orders ${error.message}`);
       }
 
-      return data
+      return data;
+    },
+  });
+};
 
-    }
+/**
+ * create order
+ * @returns order after creating a new order
+ */
+export const useCreateOrder = () => {
+  const {
+    user: { id },
+  } = useAuth();
 
+  const slug = generateOrderSlug();
 
+  const client = useQueryClient();
 
-  })
+  return useMutation({
+    mutationFn: async ({ totalPrice }: { totalPrice: number }) => {
+      const { data, error } = await supabase
+        .from("order")
+        .insert({
+          totalPrice,
+          slug,
+          user: id,
+          status: "Pending",
+        })
+        .select("*")
+        .single();
 
-}
+      if (error) {
+        throw new Error(`Error creating order ${error.message}`);
+      }
+
+      return data;
+    },
+
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: ["order"] });
+    },
+  });
+};
+
+export const useCreateOrderItem = () => {
+  return useMutation({
+    mutationFn: async (
+      insertData: { orderId: number; productId: number; quantity: number }[]
+    ) => {
+      const { data, error } = await supabase
+        .from("order_item")
+        .insert(
+          insertData.map(({ orderId, productId, quantity }) => ({
+            order: orderId,
+            product: productId,
+            quantity,
+          }))
+        )
+        .select("*");
+
+      const productQuantities = insertData.reduce(
+        (acc, { productId, quantity }) => {
+          if (!acc[productId]) {
+            acc[productId] = 0;
+          }
+          acc[productId] += quantity;
+          return acc;
+        },
+        {} as Record<number, number>
+      );
+
+      await Promise.all(
+        Object.entries(productQuantities).map(
+          async ([productId, totalQuantity]) =>
+            supabase.rpc("decrement_product_quantity", {
+              product_id: Number(productId),
+              quantity: totalQuantity,
+            })
+        )
+      );
+
+      if (error) {
+        throw new Error(`Error creating order item: ${error.message}`);
+      }
+
+      return data;
+    },
+  });
+};
+
+/**
+ * Fetches single order for the authenticated user from the database.
+ *
+ * @returns single order
+ */
+export const useFetchOrder = (slug: string) => {
+  const {
+    user: { id },
+  } = useAuth();
+
+  return useQuery({
+    queryKey: ["order", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order")
+        .select("*, order_items:order_item(*, products:product(*))")
+        .eq("slug", slug)
+        .eq("user", id)
+        .single();
+
+      if (error) {
+        throw new Error(`Error fetching order ${error.message}`);
+      }
+
+      return data;
+    },
+  });
+};

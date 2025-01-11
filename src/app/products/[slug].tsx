@@ -30,7 +30,7 @@ export default function ProductDetails() {
   const cartItems = items.find((item) => item.id === product?.id);
 
   const [quantity, setQuantity] = useState(
-    (cartItems && cartItems.quantity) || 1
+    (cartItems && cartItems.quantity) || 0
   );
 
   // add items from cart
@@ -71,8 +71,16 @@ export default function ProductDetails() {
   );
 
   if (!product) {
+    showError(error?.message!);
+
     return (
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Text style={{ color: "red", fontWeight: "400" }}>
           {error?.message}
         </Text>
